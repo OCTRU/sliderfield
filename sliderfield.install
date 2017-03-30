@@ -16,6 +16,8 @@ function sliderfield_update_7200() {
 	  $data['widget']['type'] = 'sliderfield';
 
 	  $v_default = array(
+	  	'field_min_label' => NULL,
+	  	'field_max_label' => NULL,
 		'adjust_field_min' => NULL,
 		'adjust_field_max' => NULL,
 		'animate' => TRUE,

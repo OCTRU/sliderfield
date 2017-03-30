@@ -1,10 +1,11 @@
+;OCTRU update
 name = Slider Field
 description = Provides a jQueryUI slider widget for number fields.
 package = Fields
 core = 7.x
 
 ; Information added by drupal.org packaging script on 2011-11-02
-version = "7.x-2.0-alpha1"
+version = "7.x-2.1-alpha-octru"
 core = "7.x"
 project = "sliderfield"
 datestamp = "1320260439"

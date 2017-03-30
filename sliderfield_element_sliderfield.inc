@@ -222,7 +222,7 @@ function _sliderfield_element_sliderfield_structure($element, &$form_state) {
     );
   } elseif ($element['#title']) {
     $element['slider'] = array(
-      '#type' => 'container'
+      '#type' => 'container',
     );
     /*
     $element['slider']['title'] = array(
@@ -260,6 +260,17 @@ function _sliderfield_element_sliderfield_structure($element, &$form_state) {
         '#disabled' => $element['#disabled'],
         '#attributes' => array('class' => array('sliderfield-ignore'))
       );
+  }
+
+  /* If horizontal add Max label here */
+  if ($element['#orientation'] != 'horizontal') {
+    if ($element['#field_max_label']) {
+      $element['field_max_label'] = array(
+        '#tree'  => TRUE,
+        '#type'   => 'item',
+        '#markup' => $element['#field_max_label'],
+      );
+    }
   }
 
   // Generate input for slider
@@ -353,6 +364,8 @@ function _sliderfield_element_sliderfield_structure($element, &$form_state) {
     );
   }
 
+ 
+
  $_attributes_new = array('class' => array('sliderfield-container', $element['#slider_style']), 'style' => $style);
  if (isset($element['#attributes']) && is_array($element['#attributes'])) {
    $_attributes_new = drupal_array_merge_deep($_attributes_new, $element['#attributes']);
@@ -371,6 +384,8 @@ function _sliderfield_element_sliderfield_structure($element, &$form_state) {
           'data' => array(
             'sliderfield_' . $element['#id'] => array(
               'animate' => $element['#animate'],
+              'field_min_label' => $element['#field_min_label'],
+              'field_max_label' => $element['#field_max_label'],
               'adjust_field_min_css_selector' => $element['#adjust_field_min'],
               'adjust_field_max_css_selector' => $element['#adjust_field_max'],
               'disabled' => $element['#disabled'],
@@ -411,6 +426,29 @@ function _sliderfield_element_sliderfield_structure($element, &$form_state) {
     '#markup' => '',
     '#suffix' => '</div>'
   );
+
+
+  /* If horizontal add Min label here */
+  if ($element['#orientation'] != 'horizontal') {
+    if ($element['#field_min_label']) {
+      $element['field_min_label'] = array(
+        '#tree'  => TRUE,
+        '#type'   => 'item',
+        '#markup' => $element['#field_min_label']
+      );
+    }
+  } else {
+    if ($element['#field_min_label'] || $element['#field_max_label']) {
+      $element['field_min_label'] = array(
+        '#tree'  => TRUE,
+        '#type'   => 'item',
+        '#prefix'=> '<div id="field_min_max_label" class="clearfix">',
+        '#suffix' => '</div>',
+        '#markup' => '<span class="pull-left">'.$element['#field_min_label'] . '</span> <span class="pull-right">'.$element['#field_max_label'] . '</span>'
+      );
+    }
+  }
+
 
   if ($element['#title2']) {
     $element['title2'] = array(
@@ -526,6 +564,14 @@ function _sliderfield_field_widget_info_sliderfield() {
            * Number: The duration of the animation, in milliseconds.
            */
           'animate' => TRUE,
+          /**
+          * Extra Label for Min value, if wanted
+          */
+          'field_min_label' => NULL,
+          /**
+          * Extra Label for Max value, if wanted
+          */
+          'field_max_label' => NULL,
           /**
           * Make the min value adjustable dynamically via another element
           * Type of the value is field name
@@ -661,6 +707,24 @@ function _sliderfield_field_widget_settings_form_sliderfield($field = NULL, $ins
           }
         }
       }
+
+    $valid_fields = array('' => '--') + $valid_fields;
+     $form['sliderfield_settings']['field_min_label'] = array(
+        '#type' => 'textfield',
+        '#size' => 30,
+        '#title' => t('Minimum Label'),
+        '#default_value' => isset($settings['field_min_label']) ? $settings['field_min_label']: '',
+        '#description' => t('Create a label for the Minimum value.'),
+     );
+
+     $valid_fields = array('' => '--') + $valid_fields;
+     $form['sliderfield_settings']['field_max_label'] = array(
+        '#type' => 'textfield',
+        '#size' => 30,
+        '#title' => t('Maximum Label'),
+        '#default_value' => isset($settings['field_max_label']) ? $settings['field_max_label']: '',
+       '#description' => t('Create a label for the Maximum value.'),
+     );
 
      $valid_fields = array('' => '--') + $valid_fields;
      $form['sliderfield_settings']['adjust_field_min'] = array(
@@ -877,6 +941,8 @@ function _sliderfield_field_widget_form(&$form, &$form_state, $field, $instance,
         '#required' => $instance['required'],
         '#input2_title' => t('Max'),
         '#animate' => $settings['animate'],
+        '#field_min_label' => $settings['field_min_label'],
+        '#field_max_label' => $settings['field_max_label'],
         '#adjust_field_min' => isset($settings['adjust_field_min'])? '.' . drupal_clean_css_identifier('sliderfield-field-adjust-' . $settings['adjust_field_min']) : '',
         '#adjust_field_max' => isset($settings['adjust_field_max'])? '.' . drupal_clean_css_identifier('sliderfield-field-adjust-' . $settings['adjust_field_max']) : '',
         '#disabled' => (isset($element['#disabled']))?$element['#disabled']:FALSE,
